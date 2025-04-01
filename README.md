@@ -1,3 +1,5 @@
+touch README.md
+
 our project
 
 # React + Vite
