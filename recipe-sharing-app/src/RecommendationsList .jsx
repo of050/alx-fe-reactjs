@@ -1,26 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import useStore from './store';
 
 const RecommendationList = () => {
-    const recommendations = [
-        "Router",
-        "path",
-        "react-router-dom",
-        "Route",
-        "Routes"
-    ];
+  const recommendations = useStore(state => state.recommendations);
+  const setRecommendations = useStore(state => state.setRecommendations);
 
-    const message = `src/App.jsx doesn't contain: [${recommendations.join(", ")}]`;
+  useEffect(() => {
+    // Simulate fetching recommendations
+    const dummyData = ['Item 1', 'Item 2', 'Item 3'];
+    setRecommendations(dummyData);
+  }, [setRecommendations]);
 
-    return (
-        <div style={{ border: '2px solid red', padding: '10px', borderRadius: '5px' }}>
-            <div style={{ backgroundColor: '#f8d7da', color: '#721c24', padding: '10px', border: '1px solid #f5c6cb' }}>
-                <strong>Checks for the routing implementation</strong>
-            </div>
-            <div style={{ padding: '10px' }}>
-                <i>{message}</i>
-            </div>
-        </div>
-    );
+  return (
+    <div>
+      <h2>Recommendations</h2>
+      <ul>
+        {recommendations.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
 };
 
 export default RecommendationList;

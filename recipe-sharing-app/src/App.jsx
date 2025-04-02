@@ -4,7 +4,8 @@ import RecipeList from './components/RecipeList';
 import AddRecipeForm from './components/AddRecipeForm';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import RecipeDetails from './components/RecipeDetails';
-
+import FavouritesList from './component/FavouritesList';
+import RecommendationList from './components/RecommendationList';
 const App = () => {
   return (
     <div>
