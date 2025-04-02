@@ -5,9 +5,14 @@ import useRecipeStore from '../recipeStore';
 
 const RecipeList = () => {
   const recipes = useRecipeStore(state => state.recipes);
-
+  const filteredRecipes = useRecipeStore(state => state.filteredRecipes);
   return (
     <div>
+        <ul>
+    {filteredRecipes.map((recipe, index) => (
+      <li key={index}>{recipe.title}</li>
+    ))}
+  </ul>
       {recipes.map(recipe => (
         <div key={recipe.id}>
           <Link to={`/recipe/${recipe.id}`}>
@@ -17,6 +22,7 @@ const RecipeList = () => {
         </div>
       ))}
     </div>
+  
   );
 };
 
