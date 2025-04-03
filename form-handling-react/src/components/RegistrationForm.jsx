@@ -3,40 +3,48 @@ import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 const RegistrationForm = () => {
-    return (
-        <Formik
-           value={username}
-           value1={email}
-             value2={password}
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-            validationSchema={validationSchema}
-            onSubmit={(values) => {
-                console.log('Form submitted:', values);
-                // Send the data to your API here
-            }}
-        >
-            {() => (
-                <Form>
-                    <div>
-                        <label>Username:</label>
-                        <Field name="username" />
-                        <ErrorMessage name="username" component="p" />
-                    </div>
-                    <div>
-                        <label>Email:</label>
-                        <Field name="email" type="email" />
-                        <ErrorMessage name="email" component="p" />
-                    </div>
-                    <div>
-                        <label>Password:</label>
-                        <Field name="password" type="password" />
-                        <ErrorMessage name="password" component="p" />
-                    </div>
-                    <button type="submit">Register</button>
-                </Form>
-            )}
-        </Formik>
-    );
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle registration logic here
+    console.log("Email:", email, "Password:", password);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="email">Email:</label>
+        <input
+          type="email"
+          id="email"
+          value={email} // Controlled input
+          onChange={handleEmailChange}
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          value={password} // Controlled input
+          onChange={handlePasswordChange}
+          required
+        />
+      </div>
+      <button type="submit">Register</button>
+    </form>
+  );
 };
 
 export default RegistrationForm;
