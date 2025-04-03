@@ -1,10 +1,17 @@
+// src/components/ProtectedRoute.jsx
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
 
-const isAuthenticated = false; // Change this boolean based on your auth logic
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
 
-function ProtectedRoute({ element }) {
-    return isAuthenticated ? element : <Navigate to="/" />;
-}
+  if (!isAuthenticated) {
+    // Redirect to login or home if not authenticated
+    return <Navigate to="/" />;
+  }
+
+  return children; // Render the protected component if authenticated
+};
 
 export default ProtectedRoute;
