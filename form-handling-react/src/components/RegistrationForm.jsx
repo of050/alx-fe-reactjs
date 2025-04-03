@@ -1,19 +1,44 @@
 import React, { useState } from 'react';
 
 const RegistrationForm = () => {
-    const [username, setUsername] = useState('');
-    return (
-        <form>
-            <label htmlFor="username">Username:</label>
-            <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-            />
-            {/* Other form elements... */}
-        </form>
-    );
-    // Other states and functions...
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Email:</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>Password:</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>Username:</label>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <button type="submit">Register</button>
+    </form>
+  );
 };
+
 export default RegistrationForm;
