@@ -1,48 +1,107 @@
-// src/__tests__/TodoList.test.js
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import TodoList from '../TodoList';
+import React from "react";
+import { render, fireEvent, screen } from "@testing-library/react";
+import TodoList from "../path/to/TodoList"; // Adjust the import path accordingly
 
-describe('TodoList', () => {
-    test('renders TodoList component', () => {
-        render(<TodoList />);
-        expect(screen.getByText(/Todo List/i)).toBeInTheDocument();
+describe("TodoList Component", () => {
+  
+  // Initial Render Test
+  test("renders correctly with initial todos", () => {
+    const initialTodos = ["First Todo", "Second Todo"];
+    render(<TodoList initialTodos={initialTodos} />);
+    
+    // Check if initial todos are rendered
+    initialTodos.forEach(todo => {
+      expect(screen.getByText(todo)).toBeInTheDocument();
     });
+  });
 
-    test('initial todos are rendered', () => {
-        render(<TodoList />);
-        expect(screen.getByText(/Buy groceries/i)).toBeInTheDocument();
-        expect(screen.getByText(/Walk the dog/i)).toBeInTheDocument();
-        expect(screen.getByText(/Do laundry/i)).toBeInTheDocument();
+  // Test Adding Todos
+  test("allows a user to add a new todo", () => {
+    render(<TodoList />);
+    
+    const inputField = screen.getByPlaceholderText("Add a new todo"); // Adjust based on your input placeholder
+    const addButton = screen.getByText("Add"); // Adjust button text
+    
+    fireEvent.change(inputField, { target: { value: "New Todo" } });
+    fireEvent.click(addButton);
+    
+    expect(screen.getByText("New Todo")).toBeInTheDocument();
+  });
+
+  // Test Toggling Todos
+  test("allows a user to toggle a todo", () => {
+    const initialTodos = ["First Todo"];
+    render(<TodoList initialTodos={initialTodos} />);
+    
+    const toggleButton = screen.getByText("First Todo"); // Adjust based on your component's behavior
+    fireEvent.click(toggleButton);
+    
+    expect(toggleButton).toHaveClass("completed"); // Adjust if you're using specific classes for completed todos
+  });
+
+  // Test Deleting Todos
+  test("allows a user to delete a todo", () => {
+    const initialTodos = ["First Todo"];
+    render(<TodoList initialTodos={initialTodos} />);
+    
+    const deleteButton = screen.getByText("Delete"); // Adjust based on your button text for delete
+    
+    fireEvent.click(deleteButton);
+    
+    expect(screen.queryByText("First Todo")).not.toBeInTheDocument();
+  });
+
+});import React from "react";
+import { render, fireEvent, screen } from "@testing-library/react";
+import TodoList from "../path/to/TodoList"; // Adjust the import path accordingly
+
+describe("TodoList Component", () => {
+  
+  // Initial Render Test
+  test("renders correctly with initial todos", () => {
+    const initialTodos = ["First Todo", "Second Todo"];
+    render(<TodoList initialTodos={initialTodos} />);
+    
+    // Check if initial todos are rendered
+    initialTodos.forEach(todo => {
+      expect(screen.getByText(todo)).toBeInTheDocument();
     });
+  });
 
-    test('can add a new todo', () => {
-        render(<TodoList />);
-        const input = screen.getByPlaceholderText(/Add a new todo/i);
-        const button = screen.getByRole('button', { name: /Add Todo/i });
+  // Test Adding Todos
+  test("allows a user to add a new todo", () => {
+    render(<TodoList />);
+    
+    const inputField = screen.getByPlaceholderText("Add a new todo"); // Adjust based on your input placeholder
+    const addButton = screen.getByText("Add"); // Adjust button text
+    
+    fireEvent.change(inputField, { target: { value: "New Todo" } });
+    fireEvent.click(addButton);
+    
+    expect(screen.getByText("New Todo")).toBeInTheDocument();
+  });
 
-        fireEvent.change(input, { target: { value: 'New Todo' } });
-        fireEvent.click(button);
+  // Test Toggling Todos
+  test("allows a user to toggle a todo", () => {
+    const initialTodos = ["First Todo"];
+    render(<TodoList initialTodos={initialTodos} />);
+    
+    const toggleButton = screen.getByText("First Todo"); // Adjust based on your component's behavior
+    fireEvent.click(toggleButton);
+    
+    expect(toggleButton).toHaveClass("completed"); // Adjust if you're using specific classes for completed todos
+  });
 
-        expect(screen.getByText(/New Todo/i)).toBeInTheDocument();
-    });
+  // Test Deleting Todos
+  test("allows a user to delete a todo", () => {
+    const initialTodos = ["First Todo"];
+    render(<TodoList initialTodos={initialTodos} />);
+    
+    const deleteButton = screen.getByText("Delete"); // Adjust based on your button text for delete
+    
+    fireEvent.click(deleteButton);
+    
+    expect(screen.queryByText("First Todo")).not.toBeInTheDocument();
+  });
 
-    test('can toggle a todo', () => {
-        render(<TodoList />);
-        const todoItem = screen.getByText(/Buy groceries/i);
-
-        fireEvent.click(todoItem);
-        expect(todoItem).toHaveStyle('text-decoration: line-through');
-
-        fireEvent.click(todoItem);
-        expect(todoItem).toHaveStyle('text-decoration: none');
-    });
-
-    test('can delete a todo', () => {
-        render(<TodoList />);
-        const deleteButton = screen.getAllByText(/Delete/i)[0];
-
-        fireEvent.click(deleteButton);
-        expect(screen.queryByText(/Buy groceries/i)).not.toBeInTheDocument();
-    });
 });
