@@ -1,50 +1,70 @@
-// src/components/RecipeDetail.jsx
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+// src/components/AddRecipeForm.jsx
+import React, { useState } from 'react';
 
-const RecipeDetail = () => {
-  const { id } = useParams();
-  const [recipe, setRecipe] = useState(null);
+const AddRecipeForm = () => {
+  const [title, setTitle] = useState('');
+  const [ingredients, setIngredients] = useState(['']);
+  const [instructions, setInstructions] = useState('');
 
-  useEffect(() => {
-    const fetchRecipe = async () => {
-      const response = await fetch('/data.json');
-      const data = await response.json();
-      const foundRecipe = data.find((r) => r.id === parseInt(id));
-      setRecipe(foundRecipe);
-    };
+  const handleAddIngredient = () => {
+    setIngredients([...ingredients, '']);
+  };
 
-    fetchRecipe();
-  }, [id]);
+  const handleIngredientChange = (index, value) => {
+    const updatedIngredients = [...ingredients];
+    updatedIngredients[index] = value;
+    setIngredients(updatedIngredients);
+  };
 
-  if (!recipe) {
-    return <div>Loading...</div>;
-  }
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic
+  };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">{recipe.title}</h1>
-      <img src={recipe.image} alt={recipe.title} className="w-full h-64 object-cover mb-4" />
-      <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
-        <h2 className="text-xl font-semibold">Ingredients</h2>
-        <ul className="list-disc list-inside">
-          {/* Replace with actual ingredients from your data */}
-          <li>Ingredient 1</li>
-          <li>Ingredient 2</li>
-          <li>Ingredient 3</li>
-        </ul>
+    <form className="container mx-auto p-4" onSubmit={handleFormSubmit}>
+      <h1 className="text-3xl font-bold mb-4">Add Recipe</h1>
+      <div className="mb-4">
+        <label className="block text-gray-700">Recipe Title</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+          placeholder="Enter Recipe Title"
+          required
+        />
       </div>
-      <div className="bg-white rounded-lg shadow-lg p-4">
-        <h2 className="text-xl font-semibold">Cooking Instructions</h2>
-        <p>
-          {/* Replace with actual cooking instructions from your data */}
-          Step 1: Do this.<br />
-          Step 2: Do that.<br />
-          Step 3: Enjoy your meal!
-        </p>
+      <h2 className="text-xl font-semibold mb-2">Ingredients</h2>
+      {ingredients.map((ingredient, index) => (
+        <input
+          key={index}
+          type="text"
+          value={ingredient}
+          onChange={(e) => handleIngredientChange(index, e.target.value)}
+          className="mb-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+          placeholder={`Ingredient ${index + 1}`}
+        />
+      ))}
+      <button type="button" onClick={handleAddIngredient} className="text-blue-500">
+        Add Ingredient
+      </button>
+      <div className="mb-4 mt-4">
+        <label className="block text-gray-700">Cooking Instructions</label>
+        <textarea
+          value={instructions}
+          onChange={(e) => setInstructions(e.target.value)}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+          rows="4"
+          placeholder="Enter cooking instructions"
+          required
+        ></textarea>
       </div>
-    </div>
+      <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+        Submit Recipe
+      </button>
+    </form>
   );
 };
 
-export default RecipeDetail;
+export default AddRecipeForm;
