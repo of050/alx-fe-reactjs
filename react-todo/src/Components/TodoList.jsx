@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 
 const TodoList = () => {
+  // Static array of todos
   const [todos, setTodos] = useState([
     { id: 1, text: 'Learn React', completed: false },
     { id: 2, text: 'Learn Jest', completed: false },
@@ -9,19 +10,22 @@ const TodoList = () => {
   ]);
   const [newTodo, setNewTodo] = useState('');
 
+  // Function to add a new todo
   const addTodo = (e) => {
     e.preventDefault();
-    if (!newTodo) return;
+    if (!newTodo) return; // Prevent adding empty todos
     setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
-    setNewTodo('');
+    setNewTodo(''); // Clear input field
   };
 
+  // Function to toggle todo completion status
   const toggleTodo = (id) => {
     setTodos(todos.map(todo => 
       todo.id === id ? { ...todo, completed: !todo.completed } : todo
     ));
   };
 
+  // Function to delete a todo
   const deleteTodo = (id) => {
     setTodos(todos.filter(todo => todo.id !== id));
   };
@@ -43,7 +47,7 @@ const TodoList = () => {
           <li 
             key={todo.id} 
             onClick={() => toggleTodo(todo.id)} 
-            style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
+            style={{ textDecoration: todo.completed ? 'line-through' : 'none', cursor: 'pointer' }}
           >
             {todo.text}
             <button onClick={(e) => { e.stopPropagation(); deleteTodo(todo.id); }}>Delete</button>

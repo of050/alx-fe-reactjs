@@ -1,7 +1,7 @@
 // src/__tests__/TodoList.test.js
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import TodoList from './components/TodoList';
+import TodoList from '../components/TodoList';
 
 describe('TodoList Component', () => {
   test('renders TodoList component', () => {
@@ -21,7 +21,4 @@ describe('TodoList Component', () => {
     const input = screen.getByPlaceholderText(/Add a new todo/i);
     const button = screen.getByText(/Add Todo/i);
 
-    fireEvent.change(input, { target: { value: 'New Todo' } });
-    fireEvent.click(button);
-
-    const
+    fire
