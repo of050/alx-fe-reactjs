@@ -1,33 +1,52 @@
 import React, { useState } from 'react';
+import { fetchUserData } from '../services/githubService';
 
-// Assuming you are using useState to manage your search results
 const Search = () => {
-    const [results, setResults] = useState([]);
-    const [errorMessage, setErrorMessage] = useState('');
+  const [username, setUsername] = useState('');
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-    const handleSearch = async (query) => {
-        try {
-            const response = await fetch(`your_api_endpoint?query=${query}`);
-            const data = await response.json();
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      setLoading(true);
+      setError('');
+      try {
+          const data = await fetchUserData(username);
+          if (data) {
+              setUserData(data);
+          } else {
+              setError("Looks like we can't find the user");
+          }
+      } catch (err) {
+          setError("Looks like we can't find the user");
+      } finally {
+          setLoading(false);
+      }
+  };
 
-            if (data.length === 0) {
-                setErrorMessage("Looks like we can't find the user");
-            } else {
-                setResults(data);
-                setErrorMessage('');
-            }
-        } catch (error) {
-            setErrorMessage("An error occurred while fetching the data.");
-        }
-    };
-
-    return (
-        <div>
-            {/* Your search input and button here */}
-            {errorMessage && <p>{errorMessage}</p>}
-            {/* Render results here */}
-        </div>
-    );
+  return (
+      <div>
+          <form onSubmit={handleSubmit}>
+              <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter GitHub username"
+              />
+              <button type="submit">Search</button>
+          </form>
+          {loading && <p>Loading...</p>}
+          {error && <p>{error}</p>}
+          {userData && (
+              <div>
+                  <img src={userData.avatar_url} alt={userData.login} />
+                  <h3>{userData.login}</h3>
+                  <a href={userData.html_url} target="_blank" rel="noopener noreferrer">View Profile</a>
+              </div>
+          )}
+      </div>
+  );
 };
 
 export default Search;
