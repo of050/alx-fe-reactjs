@@ -1,6 +1,6 @@
-// src/PostsComponent.jsx
+// src/components/PostsComponent.jsx
 import React from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 
 const fetchPosts = async () => {
   const response = await fetch('https://jsonplaceholder.typicode.com/posts');
@@ -11,15 +11,10 @@ const fetchPosts = async () => {
 };
 
 const PostsComponent = () => {
-  const { data, error, isLoading, refetch } = useQuery('posts', fetchPosts);
+  const { data, error, isLoading, isError, refetch } = useQuery('posts', fetchPosts);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error.message}</div>; // Handle error state
 
   return (
     <div>
