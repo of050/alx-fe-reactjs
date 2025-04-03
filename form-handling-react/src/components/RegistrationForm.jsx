@@ -5,11 +5,10 @@ import * as Yup from 'yup';
 const RegistrationForm = () => {
     return (
         <Formik
-            initialValues={{
-                username: '',
-                email: '',
-                password: '',
-            }}
+           value={username}
+           value1={email}
+             value2={password}
+
             validationSchema={validationSchema}
             onSubmit={(values) => {
                 console.log('Form submitted:', values);
