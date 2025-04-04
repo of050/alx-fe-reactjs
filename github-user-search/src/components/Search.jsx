@@ -1,10 +1,10 @@
 // src/components/Search.jsx
 import React, { useState } from 'react';
-import { fetchUser Data } from '../services/githubService';
+import { fetchUserData } from '../services/githubService';
 
 const Search = () => {
   const [username, setUsername] = useState('');
-  const [userData, setUser Data] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -13,10 +13,13 @@ const Search = () => {
     setLoading(true);
     setError('');
     try {
-      const data = await fetchUser Data(username);
-      setUser Data(data);
+      const data = await fetchUserData(username); // Fix function call name
+      if (!data.login) { // Check if login exists
+        throw new Error(); // If user not found, throw error
+      }
+      setUserData(data);
     } catch (err) {
-      setError("Looks like we can't find the user");
+      setError("Looks like we can't find the user"); // User not found
     } finally {
       setLoading(false);
     }
@@ -37,8 +40,8 @@ const Search = () => {
       {error && <p>{error}</p>}
       {userData && (
         <div>
-          <h2>{userData.name}</h2>
-          <img src={userData.avatar_url} alt={userData.name} />
+          <h2>{userData.name || userData.login}</h2> {/* Use login as fallback */}
+          <img src={userData.avatar_url} alt={userData.name || userData.login} />
           <a href={userData.html_url} target="_blank" rel="noopener noreferrer">View Profile</a>
         </div>
       )}
