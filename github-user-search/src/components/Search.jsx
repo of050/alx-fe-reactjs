@@ -1,61 +1,62 @@
+// Search.jsx
 import React, { useState } from 'react';
+import { fetchUserData } from '../services/githubService';
 
 const Search = () => {
-  // State management
   const [username, setUsername] = useState('');
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Handle input changes
-  const handleInputChange = (event) => {
-    setUsername(event.target.value);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setUserData(null);
 
-  // Fetch user data from GitHub API
-  const fetchUserData = async (username) => {
-    const response = await fetch(`https://api.github.com/users/${username}`);
-    if (!response.ok) {
-      throw new Error("User not found");
-    }
-    const data = await response.json();
-    return data;
-  };
-
-  // Handle form submission
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError(''); // Reset error message
     try {
-      const userData = await fetchUserData(username);
-      setUserData(userData);
-    } catch (error) {
-      setError("Looks like we can't find the user.");
-      setUserData(null);
+      const data = await fetchUserData(username);
+      setUserData(data);
+    } catch (err) {
+      setError('Looks like we can’t find the user');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="text"
           value={username}
-          onChange={handleInputChange}
+          onChange={(e) => setUsername(e.target.value)}
           placeholder="Enter GitHub username"
+          className="p-2 border rounded"
         />
-        <button type="submit">Search</button>
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+          Search
+        </button>
       </form>
-      
-      {error && <p>{error}</p>}
-      
-      {userData && (
-        <div>
-          <h2>User Details:</h2>
-          <p>Username: {userData.login}</p>
-          <p>Profile URL: {userData.html_url}</p>
-          <p>Followers: {userData.followers}</p>
-        </div>
-      )}
+
+      <div className="mt-6">
+        {loading && <p>Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+        {userData && (
+          <div className="flex flex-col items-center text-center">
+            <img src={userData.avatar_url} alt="Avatar" className="w-24 h-24 rounded-full mb-2" />
+            <h2 className="text-xl font-bold">{userData.name || userData.login}</h2>
+            <a
+              href={userData.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              View GitHub Profile
+            </a>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
