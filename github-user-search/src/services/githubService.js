@@ -1,19 +1,15 @@
 import axios from 'axios';
 
-// Access the environment variable for the GitHub API key
-const apiKey = import.meta.env.VITE_APP_GITHUB_API_KEY;
+export const searchUsers = async (username, location, repos, page = 1) => {
+  let query = '';
+  if (username) query += `${username} in:login`;
+  if (location) query += ` location:${location}`;
+  if (repos) query += ` repos:>=${repos}`;
 
-// Function to fetch user data from GitHub API
-export const fetchUserData = async (username) => {
-    try {
-        const response = await axios.get(`https://api.github.com/users/${username}`, {
-            headers: {
-                Authorization: `token ${apiKey}`, // Use the API key in the request header
-            },
-        });
-        return response.data; // Return the user data
-    } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-        throw new Error('Error fetching user data'); // Handle errors
-    }
+  const url = `https://api.github.com/search/users?q=${encodeURIComponent(
+    query
+  )}&page=${page}&per_page=30`;
+
+  const response = await axios.get(url);
+  return response.data;
 };

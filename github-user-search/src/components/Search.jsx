@@ -1,22 +1,31 @@
-// Search.jsx
 import React, { useState } from 'react';
-import { fetchUserData } from '../services/githubService';
+import { searchUsers } from '../services/githubService';
 
 const Search = () => {
-  const [username, setUsername] = useState('');
-  const [userData, setUserData] = useState(null);
+  const [form, setForm] = useState({
+    username: '',
+    location: '',
+    repos: '',
+  });
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
 
-  const handleSubmit = async (e) => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e, newPage = 1) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setUserData(null);
+    setUsers([]);
+    setPage(newPage);
 
     try {
-      const data = await fetchUserData(username);
-      setUserData(data);
+      const data = await searchUsers(form.username, form.location, form.repos, newPage);
+      setUsers(data.items);
     } catch (err) {
       setError('Looks like we cant find the user');
     } finally {
@@ -25,16 +34,36 @@ const Search = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <form onSubmit={(e) => handleSubmit(e)} className="grid gap-4 md:grid-cols-3">
         <input
           type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Enter GitHub username"
+          name="username"
+          placeholder="Username"
+          value={form.username}
+          onChange={handleChange}
           className="p-2 border rounded"
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+        <input
+          type="text"
+          name="location"
+          placeholder="Location"
+          value={form.location}
+          onChange={handleChange}
+          className="p-2 border rounded"
+        />
+        <input
+          type="number"
+          name="repos"
+          placeholder="Min Repos"
+          value={form.repos}
+          onChange={handleChange}
+          className="p-2 border rounded"
+        />
+        <button
+          type="submit"
+          className="md:col-span-3 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+        >
           Search
         </button>
       </form>
@@ -42,18 +71,38 @@ const Search = () => {
       <div className="mt-6">
         {loading && <p>Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
-        {userData && (
-          <div className="flex flex-col items-center text-center">
-            <img src={userData.avatar_url} alt="Avatar" className="w-24 h-24 rounded-full mb-2" />
-            <h2 className="text-xl font-bold">{userData.name || userData.login}</h2>
-            <a
-              href={userData.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline"
+        {!loading && users.length > 0 && (
+          <div className="grid gap-6 mt-4">
+            {users.map((user) => (
+              <div key={user.id} className="flex items-center gap-4 p-4 border rounded">
+                <img
+                  src={user.avatar_url}
+                  alt="avatar"
+                  className="w-16 h-16 rounded-full"
+                />
+                <div>
+                  <h3 className="text-lg font-bold">{user.login}</h3>
+                  <a
+                    href={user.html_url}
+                    className="text-blue-600 underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    GitHub Profile
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {users.length >= 30 && (
+          <div className="mt-4 text-center">
+            <button
+              onClick={(e) => handleSubmit(e, page + 1)}
+              className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded"
             >
-              View GitHub Profile
-            </a>
+              Load More
+            </button>
           </div>
         )}
       </div>
