@@ -1,21 +1,19 @@
-// src/services/githubService.js
 import axios from 'axios';
 
-// Access the environment variable
+// Access the environment variable for the GitHub API key
 const apiKey = import.meta.env.VITE_APP_GITHUB_API_KEY;
-const fetchUserData = async (username) => {
+
+// Function to fetch user data from GitHub API
+export const fetchUserData = async (username) => {
     try {
-        const response = await fetch(`https://api.github.com/users/${username}`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        return data;
+        const response = await axios.get(`https://api.github.com/users/${username}`, {
+            headers: {
+                Authorization: `token ${apiKey}`, // Use the API key in the request header
+            },
+        });
+        return response.data; // Return the user data
     } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
-        throw error;
+        throw new Error('Error fetching user data'); // Handle errors
     }
 };
-
-// Exporting the function for use in other parts of the application
-export { fetchUserData };
