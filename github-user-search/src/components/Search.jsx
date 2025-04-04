@@ -1,52 +1,42 @@
 import React, { useState } from 'react';
-import { fetchUserData } from '../services/githubService';
 
-const Search = () => {
+const SearchComponent = ({ onSearch }) => {
   const [username, setUsername] = useState('');
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [location, setLocation] = useState('');
+  const [minRepos, setMinRepos] = useState('');
 
-  const handleSubmit = async (e) => {
-      e.preventDefault();
-      setLoading(true);
-      setError('');
-      try {
-          const data = await fetchUserData(username);
-          if (data) {
-              setUserData(data);
-          } else {
-              setError("Looks like we can't find the user");
-          }
-      } catch (err) {
-          setError("Looks like we can't find the user");
-      } finally {
-          setLoading(false);
-      }
+  const handleSearch = () => {
+    onSearch(username, location, minRepos);
   };
 
   return (
-      <div>
-          <form onSubmit={handleSubmit}>
-              <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter GitHub username"
-              />
-              <button type="submit">Search</button>
-          </form>
-          {loading && <p>Loading...</p>}
-          {error && <p>{error}</p>}
-          {userData && (
-              <div>
-                  <img src={userData.avatar_url} alt={userData.login} />
-                  <h3>{userData.login}</h3>
-                  <a href={userData.html_url} target="_blank" rel="noopener noreferrer">View Profile</a>
-              </div>
-          )}
-      </div>
+    <div className="p-4">
+      <input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        className="border p-2 rounded w-full mb-2"
+      />
+      <input
+        type="text"
+        placeholder="Location"
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+        className="border p-2 rounded w-full mb-2"
+      />
+      <input
+        type="number"
+        placeholder="Minimum Repositories"
+        value={minRepos}
+        onChange={(e) => setMinRepos(e.target.value)}
+        className="border p-2 rounded w-full mb-2"
+      />
+      <button onClick={handleSearch} className="bg-blue-500 text-white p-2 rounded">
+        Search
+      </button>
+    </div>
   );
 };
 
-export default Search;
+export default SearchComponent;
