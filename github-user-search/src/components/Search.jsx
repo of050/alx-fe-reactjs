@@ -1,66 +1,63 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-// Sample Search Component
 const Search = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [results, setResults] = useState([]);
-    const [message, setMessage] = useState('');
+  // State management
+  const [username, setUsername] = useState('');
+  const [userData, setUserData] = useState(null);
+  const [error, setError] = useState('');
 
-    // Example data to search through
-    const data = [
-        "Login",
-        "Sign Up",
-        "Looks like we can't find the user",
-        // Add more items here
-    ];
+  // Handle input changes
+  const handleInputChange = (event) => {
+    setUsername(event.target.value);
+  };
 
-    // Search function
-    const handleSearch = () => {
-        if (!searchTerm) {
-            setMessage('Please enter a search term.');
-            return;
-        }
+  // Fetch user data from GitHub API
+  const fetchUserData = async (username) => {
+    const response = await fetch(`https://api.github.com/users/${username}`);
+    if (!response.ok) {
+      throw new Error("User not found");
+    }
+    const data = await response.json();
+    return data;
+  };
 
-        const filteredResults = data.filter(item => 
-            item.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+  // Handle form submission
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError(''); // Reset error message
+    try {
+      const userData = await fetchUserData(username);
+      setUserData(userData);
+    } catch (error) {
+      setError("Looks like we can't find the user.");
+      setUserData(null);
+    }
+  };
 
-        if (filteredResults.length > 0) {
-            setResults(filteredResults);
-            setMessage('');
-        } else {
-            setResults([]);
-            setMessage("Looks like we can't find the user");
-        }
-    };
-
-    useEffect(() => {
-        // Example: Trigger search on component mount or update
-        handleSearch();
-    }, [searchTerm]);
-
-    return (
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={username}
+          onChange={handleInputChange}
+          placeholder="Enter GitHub username"
+        />
+        <button type="submit">Search</button>
+      </form>
+      
+      {error && <p>{error}</p>}
+      
+      {userData && (
         <div>
-            <input 
-                type="text" 
-                placeholder="Search..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button onClick={handleSearch}>Search</button>
-
-            <div>
-                {message && <p>{message}</p>}
-                {results.length > 0 && (
-                    <ul>
-                        {results.map((result, index) => (
-                            <li key={index}>{result}</li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+          <h2>User Details:</h2>
+          <p>Username: {userData.login}</p>
+          <p>Profile URL: {userData.html_url}</p>
+          <p>Followers: {userData.followers}</p>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default Search;
