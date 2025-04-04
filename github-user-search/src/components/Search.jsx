@@ -1,42 +1,49 @@
+// src/components/Search.jsx
 import React, { useState } from 'react';
+import { fetchUser Data } from '../services/githubService';
 
-const SearchComponent = ({ onSearch }) => {
+const Search = () => {
   const [username, setUsername] = useState('');
-  const [location, setLocation] = useState('');
-  const [minRepos, setMinRepos] = useState('');
+  const [userData, setUser Data] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSearch = () => {
-    onSearch(username, location, minRepos);
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const data = await fetchUser Data(username);
+      setUser Data(data);
+    } catch (err) {
+      setError("Looks like we can't find the user");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="p-4">
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="border p-2 rounded w-full mb-2"
-      />
-      <input
-        type="text"
-        placeholder="Location"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-        className="border p-2 rounded w-full mb-2"
-      />
-      <input
-        type="number"
-        placeholder="Minimum Repositories"
-        value={minRepos}
-        onChange={(e) => setMinRepos(e.target.value)}
-        className="border p-2 rounded w-full mb-2"
-      />
-      <button onClick={handleSearch} className="bg-blue-500 text-white p-2 rounded">
-        Search
-      </button>
+    <div>
+      <form onSubmit={handleSearch}>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Enter GitHub username"
+        />
+        <button type="submit">Search</button>
+      </form>
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
+      {userData && (
+        <div>
+          <h2>{userData.name}</h2>
+          <img src={userData.avatar_url} alt={userData.name} />
+          <a href={userData.html_url} target="_blank" rel="noopener noreferrer">View Profile</a>
+        </div>
+      )}
     </div>
   );
 };
 
-export default SearchComponent;
+export default Search;
