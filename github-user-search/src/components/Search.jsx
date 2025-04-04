@@ -1,52 +1,66 @@
-// src/components/Search.jsx
-import React, { useState } from 'react';
-import { fetchUserData } from '../services/githubService';
+import React, { useState, useEffect } from 'react';
 
+// Sample Search Component
 const Search = () => {
-  const [username, setUsername] = useState('');
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [results, setResults] = useState([]);
+    const [message, setMessage] = useState('');
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const data = await fetchUserData(username); // Fix function call name
-      if (!data.login) { // Check if login exists
-        throw new Error(); // If user not found, throw error
-      }
-      setUserData(data);
-    } catch (err) {
-      setError("Looks like we can't find the user"); // User not found
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Example data to search through
+    const data = [
+        "Login",
+        "Sign Up",
+        "Looks like we can't find the user",
+        // Add more items here
+    ];
 
-  return (
-    <div>
-      <form onSubmit={handleSearch}>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Enter GitHub username"
-        />
-        <button type="submit">Search</button>
-      </form>
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
-      {userData && (
+    // Search function
+    const handleSearch = () => {
+        if (!searchTerm) {
+            setMessage('Please enter a search term.');
+            return;
+        }
+
+        const filteredResults = data.filter(item => 
+            item.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        if (filteredResults.length > 0) {
+            setResults(filteredResults);
+            setMessage('');
+        } else {
+            setResults([]);
+            setMessage("Looks like we can't find the user");
+        }
+    };
+
+    useEffect(() => {
+        // Example: Trigger search on component mount or update
+        handleSearch();
+    }, [searchTerm]);
+
+    return (
         <div>
-          <h2>{userData.name || userData.login}</h2> {/* Use login as fallback */}
-          <img src={userData.avatar_url} alt={userData.name || userData.login} />
-          <a href={userData.html_url} target="_blank" rel="noopener noreferrer">View Profile</a>
+            <input 
+                type="text" 
+                placeholder="Search..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button onClick={handleSearch}>Search</button>
+
+            <div>
+                {message && <p>{message}</p>}
+                {results.length > 0 && (
+                    <ul>
+                        {results.map((result, index) => (
+                            <li key={index}>{result}</li>
+                        ))}
+                    </ul>
+                )}
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default Search;
